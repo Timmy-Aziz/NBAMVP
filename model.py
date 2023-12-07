@@ -8,7 +8,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import accuracy_score
 
 # Reading CSVs
-advanced = pd.read_csv('advanced.csv')
+advanced = pd.read_csv('Advanced.csv')
 all_star_selections = pd.read_csv('All-Star Selections.csv')
 end_of_season_teams_voting = pd.read_csv('End of Season Teams (Voting).csv')
 end_of_season_teams = pd.read_csv('End of Season Teams.csv')
@@ -24,7 +24,6 @@ player_season_info = pd.read_csv('Player Season Info.csv')
 player_shooting = pd.read_csv('Player Shooting.csv')
 player_totals= pd.read_csv('Player Totals.csv')
 player_data = pd.read_csv('player_data.csv')
-players = pd.read_csv('Players.csv')
 team_abbrev = pd.read_csv('Team Abbrev.csv')
 team_stats_per_hundred = pd.read_csv('Team Stats Per 100 Poss.csv')
 team_stats_per_game = pd.read_csv('Team Stats Per Game.csv')
@@ -34,7 +33,6 @@ team_totals = pd.read_csv('Team Totals.csv')
 
 # Past MVPs
 nba_mvp_winners = player_award_shares[(player_award_shares['award'] == 'nba mvp') & (player_award_shares['winner'] == True)]
-print(nba_mvp_winners.player)
 
 '''
 Most important statistics for predicting NBA MVP: 
@@ -53,3 +51,31 @@ Include team record
 12. Plus/Minus
 '''
 
+# Merging Player-Specific CSVs into a DataFrame
+merged_player_df = pd.merge(advanced, all_star_selections, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, end_of_season_teams_voting, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, end_of_season_teams, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, per_thirty_six, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, player_award_shares, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, player_career_info, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, player_per_game, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, player_play_by_play, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, player_season_info, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, player_shooting, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(merged_player_df, player_totals, on=['player', 'season'], how='inner')
+
+# Assuming merged_df is your merged DataFrame
+columns_to_remove = merged_player_df.filter(like='lg').columns
+merged_player_df = merged_player_df.drop(columns=columns_to_remove)
+
+
+# Merging Team Related CSVs
+merged_team_df = pd.merge(team_abbrev, team_stats_per_hundred, on=['team', 'season'], how='inner')
+merged_team_df = pd.merge(merged_team_df, team_stats_per_game, on=['team', 'season'], how='inner')
+merged_team_df = pd.merge(merged_team_df, team_summaries, on=['team', 'season'], how='inner')
+merged_team_df = pd.merge(merged_team_df, team_totals, on=['team', 'season'], how='inner')
+merged_team_df = pd.merge(merged_team_df, opponent_stats_per_hundred, on=['player', 'season'], how='inner')
+merged_team_df = pd.merge(merged_team_df, opponent_stats_per_game, on=['player', 'season'], how='inner')
+merged_team_df = pd.merge(merged_team_df, opponent_totals, on=['player', 'season'], how='inner')
+
+print(merged_player_df.head())
