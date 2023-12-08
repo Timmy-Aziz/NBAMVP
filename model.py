@@ -51,31 +51,37 @@ Include team record
 12. Plus/Minus
 '''
 
+
 # Merging Player-Specific CSVs into a DataFrame
-merged_player_df = pd.merge(advanced, all_star_selections, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, end_of_season_teams_voting, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, end_of_season_teams, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, per_thirty_six, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, player_award_shares, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, player_career_info, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, player_per_game, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, player_play_by_play, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, player_season_info, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, player_shooting, on=['player', 'season'], how='inner')
-merged_player_df = pd.merge(merged_player_df, player_totals, on=['player', 'season'], how='inner')
+merged_player_df = pd.merge(advanced, all_star_selections, on=['player', 'season'], how='inner', suffixes=('_adv', '_all_star'))
+merged_player_df = pd.merge(merged_player_df, end_of_season_teams_voting, on=['player', 'season'], how='inner', suffixes=('_merged', '_teams_voting'))
+merged_player_df = pd.merge(merged_player_df, end_of_season_teams, on=['player', 'season'], how='inner', suffixes=('_merged', '_teams'))
+merged_player_df = pd.merge(merged_player_df, per_thirty_six, on=['player', 'season'], how='inner', suffixes=('_merged', '_per_thirty_six'))
+merged_player_df = pd.merge(merged_player_df, player_award_shares, on=['player', 'season'], how='inner', suffixes=('_merged', '_award_shares'))
+merged_player_df = pd.merge(merged_player_df, player_career_info, on=['player', 'season'], how='inner', suffixes=('_merged', '_career_info'))
+merged_player_df = pd.merge(merged_player_df, player_per_game, on=['player', 'season'], how='inner', suffixes=('_merged', '_per_game'))
+merged_player_df = pd.merge(merged_player_df, player_play_by_play, on=['player', 'season'], how='inner', suffixes=('_merged', '_play_by_play'))
+merged_player_df = pd.merge(merged_player_df, player_season_info, on=['player', 'season'], how='inner', suffixes=('_merged', '_season_info'))
+merged_player_df = pd.merge(merged_player_df, player_shooting, on=['player', 'season'], how='inner', suffixes=('_merged', '_shooting'))
+merged_player_df = pd.merge(merged_player_df, player_totals, on=['player', 'season'], how='inner', suffixes=('_merged', '_totals'))
+
+# Manually rename overlapping columns
+merged_player_df.rename(columns={'player_id_merged': 'player_id', 'age_merged': 'age', 'seas_id_merged': 'seas_id', 'tm_merged': 'tm'}, inplace=True)
 
 # Assuming merged_df is your merged DataFrame
-columns_to_remove = merged_player_df.filter(like='lg').columns
+columns_to_remove = merged_player_df.filter(like='_lg').columns
 merged_player_df = merged_player_df.drop(columns=columns_to_remove)
 
-
 # Merging Team Related CSVs
-merged_team_df = pd.merge(team_abbrev, team_stats_per_hundred, on=['team', 'season'], how='inner')
-merged_team_df = pd.merge(merged_team_df, team_stats_per_game, on=['team', 'season'], how='inner')
-merged_team_df = pd.merge(merged_team_df, team_summaries, on=['team', 'season'], how='inner')
-merged_team_df = pd.merge(merged_team_df, team_totals, on=['team', 'season'], how='inner')
-merged_team_df = pd.merge(merged_team_df, opponent_stats_per_hundred, on=['player', 'season'], how='inner')
-merged_team_df = pd.merge(merged_team_df, opponent_stats_per_game, on=['player', 'season'], how='inner')
-merged_team_df = pd.merge(merged_team_df, opponent_totals, on=['player', 'season'], how='inner')
+merged_team_df = pd.merge(team_abbrev, team_stats_per_hundred, on=['team', 'season'], how='inner', suffixes=('_abbrev', '_stats_per_hundred'))
+merged_team_df = pd.merge(merged_team_df, team_stats_per_game, on=['team', 'season'], how='inner', suffixes=('_merged', '_stats_per_game'))
+merged_team_df = pd.merge(merged_team_df, team_summaries, on=['team', 'season'], how='inner', suffixes=('_merged', '_summaries'))
+merged_team_df = pd.merge(merged_team_df, team_totals, on=['team', 'season'], how='inner', suffixes=('_merged', '_totals'))
+merged_team_df = pd.merge(merged_team_df, opponent_stats_per_hundred, on=['team', 'season'], how='inner', suffixes=('_merged', '_opp_stats_per_hundred'))
+merged_team_df = pd.merge(merged_team_df, opponent_stats_per_game, on=['team', 'season'], how='inner', suffixes=('_merged', '_opp_stats_per_game'))
+merged_team_df = pd.merge(merged_team_df, opponent_totals, on=['team', 'season'], how='inner', suffixes=('_merged', '_opp_totals'))
+
+
+
 
 print(merged_player_df.head())
